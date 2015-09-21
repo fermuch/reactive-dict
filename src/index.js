@@ -1,22 +1,15 @@
-// XXX come up with a serialization method which canonicalizes object key
-// order, which would allow us to use objects as values for equals.
-var stringify = function (value) {
-  if (value === undefined)
-    return 'undefined';
-  return EJSON.stringify(value);
-};
-var parse = function (serialized) {
-  if (serialized === undefined || serialized === 'undefined')
-    return undefined;
-  return EJSON.parse(serialized);
-};
 
-var changed = function (v) {
-  v && v.changed();
-};
+var Tracker = require('tracker');
+var EJSON = require('ejson');
+var _ = require('underscore');
 
 // XXX COMPAT WITH 0.9.1 : accept migrationData instead of dictName
-ReactiveDict = function (dictName) {
+function ReactiveDict(dictName) {
+
+  if (!(this instanceof ReactiveDict)) {
+    return new ReactiveDict(dictName);
+  }
+
   // this.keys: key -> value
   if (dictName) {
     if (typeof dictName === 'string') {
@@ -95,8 +88,8 @@ _.extend(ReactiveDict.prototype, {
 
     // Mongo.ObjectID is in the 'mongo' package
     var ObjectID = null;
-    if (typeof Mongo !== 'undefined') {
-      ObjectID = Mongo.ObjectID;
+    if (Package.mongo) {
+      ObjectID = Package.mongo.Mongo.ObjectID;
     }
 
     // We don't allow objects (or arrays that might include objects) for
@@ -114,8 +107,9 @@ _.extend(ReactiveDict.prototype, {
         typeof value !== 'undefined' &&
         !(value instanceof Date) &&
         !(ObjectID && value instanceof ObjectID) &&
-        value !== null)
+        value !== null) {
       throw new Error("ReactiveDict.equals: value must be scalar");
+    }
     var serializedValue = stringify(value);
 
     if (Tracker.active) {
@@ -139,7 +133,7 @@ _.extend(ReactiveDict.prototype, {
     if (_.has(self.keys, key)) oldValue = parse(self.keys[key]);
     return EJSON.equals(oldValue, value);
   },
-  
+
   all: function() {
     this.allDeps.depend();
     var ret = {};
@@ -148,21 +142,21 @@ _.extend(ReactiveDict.prototype, {
     });
     return ret;
   },
-  
+
   clear: function() {
     var self = this;
-    
+
     var oldKeys = self.keys;
     self.keys = {};
-    
+
     self.allDeps.changed();
-    
+
     _.each(oldKeys, function(value, key) {
       changed(self.keyDeps[key]);
       changed(self.keyValueDeps[key][value]);
       changed(self.keyValueDeps[key]['undefined']);
     });
-    
+
   },
 
   _setObject: function (object) {
@@ -188,3 +182,22 @@ _.extend(ReactiveDict.prototype, {
     return this.keys;
   }
 });
+
+// XXX come up with a serialization method which canonicalizes object key
+// order, which would allow us to use objects as values for equals.
+var stringify = function (value) {
+  if (value === undefined)
+    return 'undefined';
+  return EJSON.stringify(value);
+};
+var parse = function (serialized) {
+  if (serialized === undefined || serialized === 'undefined')
+    return undefined;
+  return EJSON.parse(serialized);
+};
+
+var changed = function (v) {
+  v && v.changed();
+};
+
+module.exports = ReactiveDict;

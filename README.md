@@ -1,29 +1,29 @@
-# reactive-dict
 
-This package provide `ReactiveDict`, a general-purpose reactive
-datatype for use with
-[tracker](https://atmospherejs.com/meteor/tracker). It provides all of
-the functionality of the `Session` object documented in the [main
-Meteor docs](https://docs.meteor.com/#session), such as reactive
-`get`, `set`, and `equals` functions.
+# reactive-dict v1.1.1 [![experimental](http://badges.github.io/stability-badges/dist/experimental.svg)](http://github.com/badges/stability-badges)
 
-If you provide a name to its constructor, its contents will be saved across Hot
-Code Push client code updates.
+This package is stripped from [meteor/reactive-dict](https://atmospherejs.com/meteor/reactive-dict) and made compatible with [React Native](https://github.com/facebook/react-native).
 
-Example usage:
+**Note:** This package is only for client-side usage.
+
+&nbsp;
+
+## usage
 
 ```js
-var dict = new ReactiveDict('myDict');
-dict.set("weather", "cloudy");
-Tracker.autorun(function () { console.log("now " + dict.get("weather")); });
-// now cloudy
-dict.set("weather", "sunny");
-// now sunny
+var ReactiveDict = require('reactive-dict');
+
+// Provide a unique string to hot-reload the data.
+var myDict = ReactiveDict('unique id');
+
+myDict.set('someProperty', 1) // => undefined
+
+myDict.get('someProperty') // => 1
 ```
 
-For more information, see the [Tracker project
-page](https://www.meteor.com/tracker).
+&nbsp;
 
-## Future work
+## install
 
-Unify with [reactive-var](https://atmospherejs.com/meteor/reactive-var).
+```sh
+npm install aleclarson/reactive-dict#1.1.1
+```
