@@ -1,5 +1,5 @@
 
-var Tracker = require('tracker');
+var Tracker = require('trackr');
 var EJSON = require('ejson');
 var _ = require('underscore');
 

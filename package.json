@@ -5,7 +5,7 @@
   "dependencies": {
     "ejson": "aleclarson/ejson#1.0.7",
     "reload": "aleclarson/reload#1.1.4",
-    "tracker": "aleclarson/tracker#1.0.8",
+    "trackr": "^2.0.2",
     "underscore": "aleclarson/underscore#1.5.2"
   }
 }
